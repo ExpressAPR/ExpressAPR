@@ -1,0 +1,1 @@
+([[[RET_TYPE]]])_testkit_exec_result.get_retval()
