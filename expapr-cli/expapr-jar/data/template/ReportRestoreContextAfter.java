@@ -1,1 +1,0 @@
-[[[VARNAME]]] = ([[[VARTYPE]]])_testkit_orchestrator.report_field_after_[[[KIND]]]("[[[VARNAME]]]", [[[VARNAME]]]);

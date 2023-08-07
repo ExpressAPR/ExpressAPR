@@ -1,2 +1,0 @@
-private [[[MAYBE_STATIC]]] expressapr.testkit.TestKitOrchestrator _testkit_orchestrator = expressapr.testkit.TestKitOrchestrator.v();
-private [[[MAYBE_STATIC]]] expressapr.testkit.TestKitExecResult _testkit_exec_result = new expressapr.testkit.TestKitExecResult();
