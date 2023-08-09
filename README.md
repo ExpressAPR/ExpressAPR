@@ -1,13 +1,19 @@
-# ExpressAPR: Efficient Patch Validation for Java Automated Program Repair Systems
+# ExpressAPR
+
+**Efficient Patch Validation for Java Automated Program Repair Systems**
 
 
 
 ## ✨ Highlights
 
-- Equipped with five mutation testing accerelation techniques
-- ~100x faster than `defects4j compile && defects4j test` (experimented with four APR systems)
-- A user-friendly command-line interface
-- Out-of-the-box support of Defects4J and Maven, and can be configured for other benchmarks
+- **Equipped with mutation testing accerelation techniques**
+  - Mutant Schemata + Mutant Deduplication + Test Virtualization + Test Case Prioritization + Parallelization
+  - ~100x faster than `defects4j compile && defects4j test` (experimented with four APR systems)
+
+- **A user-friendly command-line interface**
+  - Out-of-the-box support of Defects4J and Maven
+  - Can be configured for other benchmarks
+
 
 
 
@@ -27,13 +33,13 @@
 
 ### Step 1. Preparation
 
-1. Use Linux (we have tested on Ubuntu 18.04 and 22.04)
-2. Install Git, JDK ≥1.8, and Python ≥3.7
-3. Install [Defects4J](https://github.com/rjust/defects4j) and/or Maven if you want to validate patches with them
-4. Clone this repository
-5. `pip3 install -r requirements.txt`
+- Use Linux (we have tested on Ubuntu 18.04 and 22.04)
+- Install Git, JDK ≥1.8, and Python ≥3.7
+- Install [Defects4J](https://github.com/rjust/defects4j) and/or Maven if you want to validate patches with them
+- Clone this repository
+- `pip3 install -r requirements.txt`
 
-### Step 2. Initialize ExpressAPR for a project
+### Step 2. Initialize ExpressAPR for a project (`init`)
 
 Say that you want to work with the bug Math-65 from Defects4J with the degree of parallelization as 3.
 
@@ -87,7 +93,7 @@ Below is an example patch set (don't include the comments):
 
 *The [demo-patches/](demo-patches/) folder contains three real patch sets collected from our experiment for demonstration.*
 
-### Step 4. Run ExpressAPR to validate them
+### Step 4. Run ExpressAPR to validate them (`run`)
 
 Say that all patch sets are stored in the `/path/to/patches/` folder.
 
@@ -119,44 +125,48 @@ Each line of that file (in JSON format) corresponds to the result for one patch 
 }
 ```
 
+### Command-line options
+
+Both `init` and `run` command support command-line options to tweak some behaviors. Use `--help` to see the full list of options.
+
 
 
 ## 🛠 Configuring for other benchmarks
 
 We provide out-of-the-box support for Defects4J (`-i defects4j -b Math-65`) and Maven (`-i maven -b /path/to/maven-project`). To add support for other benchmarks, you need to provide an **interface** (as a Python class) so that the CLI know how to check out the project and get information about the bug.
 
-Please subclass the `class Interface` in `cli/interface/__init__.py` to provide the interface. Refer to `cli/interface/defects4j.py` for our implementation of Defects4J.
+Please inherit the `class Interface` in `cli/interface/__init__.py` to provide the interface for the new benchmark. Refer to `cli/interface/defects4j.py` for our implementation of Defects4J.
 
 
 
 ## 💊 Troubleshooting
 
-### All patches marked as implausible when using a large `-j`parameter
+### Q1. Problems when using a large `-j` parameter
 
-Most Linux distributions (e.g., Ubuntu) limit the maximum number of processes a user can use. This may cause problems with a large project (e.g., Closure) if you are running with a large number of threads. Get the current limit with these two commands:
+Most Linux distributions (e.g., Ubuntu) limit the maximum number of processes a user can use. This may cause problems with some projects (e.g., Closure) if you are running with a large number of threads. Get the current limit with these two commands:
 
 - `sudo cat /proc/sys/kernel/pid_max` (kernel limit)
 - `sudo cat /sys/fs/cgroup/pids/user.slice/user-$(id -u).slice/pids.max` (systemd limit)
 
 Increase the limit by modifying the files above.
 
-### Cannot `init` for a Maven project
+### Q2. Patch validation results are wrong
+
+**Step 1: Use `--no-dedup` flag.** The Mutant Deduplication technique used in ExpressAPR assumes that tests are *stable* (not flaky, fuzzy, or concurrent). Although ExpressAPR tries to detect unstability, it may fails to detect some unstable tests, resulting in incorrect results. If this is the case, pass `--no-dedup` to the `expapr-cli run` command to opt-out Mutant Deduplication.
+
+**Step 2: Use `-t fallback` flag.** If the result is still wrong with `--no-dedup`, it may be a problem in [VMVM](https://github.com/Programming-Systems-Lab/vmvm), a third-party Test Virtualization dependency of ExpressAPR (similar to the JVM Reset component in UniAPR). We have [already fixed a few problems we encounter](https://github.com/ExpressAPR/VMVM/compare/07a36dc21373147c50ceacd7bff2b2e7a86c8780...master) in our VMVM fork, but there may be more problems. You may investigate the problem, or pass `-t fallback` to the `expapr-cli run` command to disable Test Virtualization (and also Mutant Deduplication that depends on it).
+
+### Q3. Cannot `init` for a Maven project
 
 We currently don't support validating patches to submodules. If this is the case, please directly validate the submodule (set `-b` to the directory of the submodule), not the parent module.
-
-### Patch validation results are wrong
-
-The patch deduplication technique used in ExpressAPR assumes that tests are *stable* (not flaky, fuzzy, or concurrent). Although the runtime procedure try to detect unstability, it may fails to detect some unstable tests, resulting in incorrect results. If this is the case, pass `--no-dedup` to the `expapr-cli run` command to opt-out patch deduplication.
-
-If the result is still wrong, it may be a problem in [VMVM](https://github.com/Programming-Systems-Lab/vmvm), a third-party Test Virtualization dependency of ExpressAPR (similar to the JVM Reset component in UniAPR). We have [already fixed a few problems we encounter](https://github.com/ExpressAPR/VMVM/compare/07a36dc21373147c50ceacd7bff2b2e7a86c8780...master) in our VMVM fork. If there are more problems, you may contact me or the author of VMVM, or patch yourself :)
 
 
 
 ## 🔗 Other resources
 
-- [arxiv.org/abs/2305.03955](https://arxiv.org/abs/2305.03955): Our research paper describing the implementation of ExpressAPR
+- [📄 arxiv.org/abs/2305.03955](https://arxiv.org/abs/2305.03955): Our research paper describing the implementation of ExpressAPR
 
-- ASE2023 (TODO link): The tool demonstration paper
+- 🎞 ASE2023 *(TODO link)*: The tool demonstration paper
 
-- [src/](src/): The source code of ExpressAPR Core with some documentation
-- [github.com/ExpressAPR/experiment](https://github.com/ExpressAPR/experiment): Stuff to reproduce the experiment in the research paper, and raw results
+- [💾 src/](src/): The source code of ExpressAPR Core with some documentation
+- [📊 github.com/ExpressAPR/experiment](https://github.com/ExpressAPR/experiment): Stuff to reproduce the experiment in the research paper, and raw results
