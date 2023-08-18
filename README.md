@@ -15,6 +15,13 @@
   - Can be configured for other benchmarks
 
 
+## 🛠️ Integrated techniques
+
+- **Mutant Schemata**: removes redundant compilation
+- **Mutant Deduplication**: removes equivalent patch execution
+- **Test virtualization**: removes the JVM startup cost
+- **Test case prioritization**: executes the tests that are likely to fail first
+- **Parallelization**: executes tests in parallel
 
 
 ## 👨‍🏫 Quick demo with Docker
@@ -166,7 +173,7 @@ We currently don't support validating patches to submodules. If this is the case
 
 - [📄 arxiv.org/abs/2305.03955](https://arxiv.org/abs/2305.03955): Our research paper describing the implementation of ExpressAPR
 
-- 🎞 ASE2023 *(TODO link)*: The tool demonstration paper
+- [🎞 ASE2023 Tool Demo](https://xiongyingfei.github.io/papers/ASE23Demo.pdf): The tool demonstration paper
 
 - [💾 src/](src/): The source code of ExpressAPR Core with some documentation
 - [📊 github.com/ExpressAPR/experiment](https://github.com/ExpressAPR/experiment): Stuff to reproduce the experiment in the research paper, and raw results
