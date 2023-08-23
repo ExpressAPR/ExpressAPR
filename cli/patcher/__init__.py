@@ -98,6 +98,10 @@ class BasePatcher:
     def fixup_if_needed(self):
         pass
 
+    @staticmethod
+    def mk_lang_arg(lv: int) -> str:
+        return str(lv) if lv<10 else f'1.{lv}'
+
 
 from .expapr_patcher import ExpAprPatcher
 from .onlyvmvm_patcher import OnlyVmvmPatcher

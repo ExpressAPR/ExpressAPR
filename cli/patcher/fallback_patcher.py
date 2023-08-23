@@ -166,7 +166,7 @@ class FallbackPatcher(BasePatcher):
             f' -cp {quote(self.cp_compile)}'
             f' -d {quote(str((self.workpath/self.tp_src).resolve()))}'
             f' -sourcepath {quote(str((self.workpath/self.sp_src).resolve()))}'
-            f' -source 1.{lang_level} -target 1.{lang_level}'
+            f' -source {self.mk_lang_arg(lang_level)} -target {self.mk_lang_arg(lang_level)}'
             f' {quote(str((self.workpath/self.config.filename).resolve()))}'
         )
 
