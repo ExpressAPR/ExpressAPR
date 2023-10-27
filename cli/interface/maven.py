@@ -40,6 +40,7 @@ class InterfaceMaven(Interface):
 
     def save_init_data(self) -> Dict[str, Any]:
         all_tests, fail_tests = self._reflect_test_info()
+        assert len(fail_tests)>0, 'cannot find failed tests for maven project'
         return {
             'test_cases_failing': fail_tests,
             'test_classes': list(set([t[0] for t in all_tests])),
@@ -94,16 +95,18 @@ class InterfaceMaven(Interface):
         assert errcode==0, f'errcode={errcode}\n\n{stdout}\n\n{stderr}'
         assert report_path.is_dir(), f'errcode={errcode}\n\n{stdout}\n\n{stderr}'
 
-        all_tests = []
-        fail_tests = []
+        all_tests = set()
+        fail_tests = set()
         for p in report_path.glob('TEST-*.xml'):
             xml = ElementTree.parse(p).getroot()
             for test in xml.findall('./testcase'):
-                all_tests.append((test.get('classname'), test.get('name')))
+                all_tests.add((test.get('classname'), test.get('name')))
             for fail_test in xml.findall('./testcase/error/..'):
-                fail_tests.append((fail_test.get('classname'), fail_test.get('name')))
+                fail_tests.add((fail_test.get('classname'), fail_test.get('name')))
+            for fail_test in xml.findall('./testcase/failure/..'):
+                fail_tests.add((fail_test.get('classname'), fail_test.get('name')))
 
-        return tsec, all_tests, fail_tests
+        return tsec, list(all_tests), list(fail_tests)
 
     def _reflect_test_info(self) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
         logging.info('reflecting test info for maven project')
