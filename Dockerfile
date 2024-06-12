@@ -20,7 +20,7 @@ ENV PATH $PATH:/defects4j/framework/bin
 
 # install our dependencies
 RUN apt install -y python3.10 python3-pip
-COPY cli/requirements.txt /tmp/requirements.txt
+COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt
 
 # put our code
